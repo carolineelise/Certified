@@ -1,0 +1,121 @@
+Don't have to do anything in vendor or product controllers!!!!!
+
+User - DONE
+//GET:/api/users/username/password
+        [HttpGet("{username} / {password")]
+        //path var must match param exactly the same
+        //return Task<ActionResult<User>>
+        //params string username string password
+        //called by passing in username and password
+        //should be used to read for a single user, with the username and pword, 
+		if found return user instance, if not return not found
+        //single or default async
+
+Request
+most of work will be done here
+
+GetRequests in review method
+	-reads and returns all requests in review status but omits any that are owned by the logged in user
+	-need list of all in review status
+	-requires passing the logged in user's Id to the server method
+	-returns a collection of requests, same as getall method
+	-method has to take a userid of logged in user to know who the user is to omit
+	-return will be a collection of requests like get all 
+
+	HttpGet("reviews/{userId}")
+	returns Task<AsctionResult<IEnumberable<Requests>>>
+	Parameters: int UserId
+	-Reads table to find those with status review
+	-any request in review owned by logged in user must be omitted
+	-where clause --only review status and omit one with logged in user
+	Analogy: list of all students but no men, list of students, not men
+
+	 //Get: reviews/{userId}
+        [HttpGet("reviews/{userId}")]
+            public async Task<ActionResult<IEnumerable<Request>>> GetRequestsInReview(int userId)
+        {
+
+            var requests = await _context.Request.ToListAsync();
+            var review = await _context.Request.Find(userId).Where(r => r.UserId.Equals(userId) 
+            && r.Status.Equals("REVIEW"));
+            if(review )
+                {
+
+                 
+                  return requests;
+                }
+            if(userId = {UserId})
+            {
+                return 
+            }
+        }
+
+
+		 [HttpPut("SetRequestToReview")]    
+        return await PutRequest(request.Id, request);
+
+        SetRequestToApproved(Request request)
+        {
+            request.Status = "Approved"
+                return await PutRequest
+        }
+	DONE
+	Request: Setrequesttoreview
+	Updates single request setting status to review or approved
+		-approved if the request total is less than or equal to 50
+		-review if the request total is greater than 50
+	instance shuold be passed to the server method, pass in request you want review, not just the Id
+	no data returned
+	HttpPut("review")
+	Returns: Taks<IActionResult>
+	Parameters: Request request
+	request status updated to either review or approved based on whether value field is <50>
+	to set status field, check the total and set status to approved if total is <=50, otherwise set to review
+	-Ternary statement!!!
+	-Put method generated that will update requests --instead of rewriting, could use generated and pass our changed request to generated method
+	to let it do its work designed to do
+
+	DONE
+	Request: setrequesttoapproved
+	will set status of a request to approved
+	used by reviewer when approve a request
+	-no conditions
+	HttpPut("approve")
+	Returns: Task<IActionResult>
+	Parameters: Request request
+	-use already generated put method
+	-status field set to approved
+
+	DONE
+	Request: setrequesttorejected
+	if reviewer doesn't approve the request, this happens
+	set status of request to rejected
+	HttpPut("reject")
+	Returns: Task<IActionResult>
+	Parameters: Request request
+	if rejectionreason is null/empty, not allowed action
+	sets status to rejected unconditionally
+
+	RequestLine
+	RecalculateRequest
+	-called whenever a requestline is added, updated, or deleted and after savechanges is executed
+	-recalculates the request total field by iterating through the requestlines on the request, multiplying price x quantity 
+	and adding them up, and storing the sum in the request Total field
+		-see updating total field a few days ago
+	No route/http bc not callable from web
+	Returns Task<IActionResult>
+	Parameters: int requestId
+	-Use LINQ query, easiest way
+	-read for request by requestID param
+	-retrieve all requestlines of request
+	-join requestlines with products
+	-in select clause, multiply the product price by the requestline quantity ands tore in new variable LineTotal
+	-USE INCLUDES CORRECTLY to get all the lines
+	-should be able to bring a product back for each request line
+	-wrap linq query in parens and call sum() to calculate total
+	-sum is an aggregate method and will req lambda syntax to point to the filed to sum up
+	-only one field in the select clause that can be summed up
+
+
+
+	Method: 
